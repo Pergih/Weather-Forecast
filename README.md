@@ -1,2 +1,3 @@
 # Weather-Forecast
-This project is about the weather data from weatherAPI
+This project was made for educational purposes about API and data pipelines 
+
