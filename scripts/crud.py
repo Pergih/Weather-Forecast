@@ -1,7 +1,7 @@
 import sqlite3
 
 def get_connection():
-    return sqlite3.connect("weather_sales.db")
+    return sqlite3.connect("data/weather_sales.db")
 
 def create_tables():
     with get_connection() as conn:
@@ -15,7 +15,7 @@ def create_tables():
                 humidity REAL,
                 precip_mm REAL,
                 wind_kph REAL,
-                api_timestamp TEXT NOT NULL,
+                api_timestamp TEXT NOT NULL
             )
         ''')
         
