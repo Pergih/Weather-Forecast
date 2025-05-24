@@ -15,7 +15,7 @@ def fetch_past_weather(days=7):
     today = datetime.today()
     weather_rows = []
 
-    for i in range(days):
+    for i in range(1):
         date = (today - timedelta(days=i)).strftime("%Y-%m-%d")
         response = requests.get(base_url, params={
             "key": API_KEY,
@@ -25,6 +25,7 @@ def fetch_past_weather(days=7):
 
         if response.status_code == 200:
             data = response.json()
+            print(data)
             day_data = data["forecast"]["forecastday"][0]["day"]
             weather_rows.append({
                 "date": date,
@@ -35,8 +36,8 @@ def fetch_past_weather(days=7):
         else:
             print("Error on", date, response.status_code)
 
-    df = pd.DataFrame(weather_rows)
-    df.to_csv("data/weather_data.csv", index=False)
+    # df = pd.DataFrame(weather_rows)
+    # df.to_csv("data/weather_data.csv", index=False)
     print("Saved weather data.")
     
 if __name__ == "__main__":
