@@ -1,0 +1,122 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: weather_postgres
+    environment:
+      POSTGRES_DB: weather_db
+      POSTGRES_USER: weather_user
+      POSTGRES_PASSWORD: weather_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - elt_network
+
+  dbt:
+    container_name: weather_dbt 
+    image: ghcr.io/dbt-labs/dbt-postgres:1.4.7
+    command:
+      [
+        "run",
+        "--profiles-dir",
+        "/root",
+        "--project-dir",
+        "/dbt"
+      ]
+    volumes:
+      - ./weather_dbt:/dbt
+      - ./dbt_profiles:/root
+    depends_on:
+      - postgres
+    networks:
+      - elt_network
+    environment:
+      DBT_PROFILE: default
+      DBT_TARGET: dev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  
+  airflow-init:
+    image: apache/airflow:2.9.1-python3.11
+    command: >
+          bash -c "airflow db init &&
+                  airflow users create --username admin --password admin --firstname John --lastname Doe --role Admin --email admin@example.com"
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://weather_user:weather_pass@postgres:5432/weather_db
+    depends_on:
+      - postgres
+    networks:
+      - elt_network
+
+  # webserver:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   user: root
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - elt_network
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #   volumes:
+  #     - ./airflow/dags:/opt/airflow/dags
+  #     - ./elt_script:/opt/airflow/elt_script
+  #     - ./postgres_transformations:/opt/dbt
+  #     - ~/.dbt:/root/.dbt
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - LOAD_EX=n
+  #     - EXECUTOR=Local
+  #     - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+  #     - AIRFLOW_CONN_DESTINATION_POSTGRES=postgres://postgres:secret@destination_postgres:5434/destination_db
+  #     - AIRFLOW__CORE__FERNET_KEY=plIipb9RU3-3wJ1UNaAtqVNJrqFEks1-dGbJM34EW7U=
+  #     - AIRFLOW__WEBSERVER__DEFAULT_USER_USERNAME=airflow
+  #     - AIRFLOW__WEBSERVER__DEFAULT_USER_PASSWORD=password
+  #     - AIRFLOW_WWW_USER_USERNAME=airflow
+  #     - AIRFLOW_WWW_USER_PASSWORD=password
+  #     - AIRFLOW__WEBSERVER__SECRET_KEY=secret
+  #   ports:
+  #     - "8080:8080"
+  #   command: >
+  #     bash -c "airflow db migrate && airflow standalone"
+
+
+
+  # scheduler:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   user: root
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - elt_network
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #   volumes:
+  #     - ./airflow/dags:/opt/airflow/dags
+  #     - ./elt_script:/opt/airflow/elt_script
+  #     - ./postgres_transformations:/dbt
+  #     - ~/.dbt:/root/.dbt
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - LOAD_EX=n
+  #     - EXECUTOR=Local
+  #     - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+  #     - AIRFLOW_CONN_DESTINATION_POSTGRES=postgres://postgres:secret@destination_postgres:5434/destination_db
+  #     - AIRFLOW__CORE__FERNET_KEY=plIipb9RU3-3wJ1UNaAtqVNJrqFEks1-dGbJM34EW7U=
+  #     - AIRFLOW__WEBSERVER__SECRET_KEY=secret
+  #     - AIRFLOW_WWW_USER_USERNAME=airflow
+  #     - AIRFLOW_WWW_USER_PASSWORD=password
+  #   command: scheduler
+
+
+volumes:
+  pg_data:
+
+networks:
+  elt_network:
+    driver: bridge
