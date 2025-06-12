@@ -7,7 +7,7 @@ sources:
       - name: weather_data
         columns:
           - name: id
-          - name: data
+          - name: date
           - name: location
           - name: temp_c
           - name: humidity
