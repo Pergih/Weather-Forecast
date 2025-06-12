@@ -14,7 +14,7 @@ This project was made for educational purposes about API and data pipelines
 
 ## 🗃️ Architecture Overview
 
-![Pipeline Architecture](./images/pipeline_architecture.png){ width=600px }
+![Pipeline Architecture](./images/pipeline_architecture.png){ width=300px }
 
 - Weather data is pulled daily from the [WeatherAPI](https://www.weatherapi.com/).
 - Sales data is mocked based on temperature and precipitation (e.g., more umbrella sales on rainy days).
@@ -32,7 +32,7 @@ This project was made for educational purposes about API and data pipelines
 The ETL is orchestrated using Apache Airflow, running as a containerized service via Docker.
 
 - Tasks: Pull weather → Generate sales → Insert to DB → Trigger dbt
-- Schedule: Daily
+- Schedule: 30 minutes
 
 ![Airflow DAG](./images/airflow_dag.png)
 
