@@ -8,14 +8,13 @@ This project was made for educational purposes about API and data pipelines
 - 🌬️ Airflow (ETL orchestration)
 - 🧙 dbt (Data transformation and modeling)
 - 📊 Matplotlib / Seaborn (Optional for analysis)
-- 🔐 dotenv / Airflow Variables (Secrets and config management)
 
 
 ---
 
 ## 🗃️ Architecture Overview
 
-![Pipeline Architecture](./images/pipeline_architecture.png)
+![Pipeline Architecture](./images/pipeline_architecture.png){ width=600px }
 
 - Weather data is pulled daily from the [WeatherAPI](https://www.weatherapi.com/).
 - Sales data is mocked based on temperature and precipitation (e.g., more umbrella sales on rainy days).
@@ -46,7 +45,7 @@ dbt transforms raw data into analytics-ready tables.
 - `stg_weather`: Raw weather table
 - `daily_avg_weather`: Aggregated weather metrics by day and location
 
-
+```text
                ┌───────────────────────────┐
                │  source.weather_data      │
                │  (raw PostgreSQL source)  │
@@ -64,7 +63,7 @@ dbt transforms raw data into analytics-ready tables.
 │   daily_average    │     │   weather_report    │
 │ (mart: aggregates) │     │ (mart: full report) │
 └────────────────────┘     └─────────────────────┘
-
+```
 ---
 
 
