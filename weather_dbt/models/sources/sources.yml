@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: public
+    database: weather_db
+    tables:
+      - name: weather_data
+        columns:
+          - name: id
+          - name: data
+          - name: location
+          - name: temp_c
+          - name: humidity
+          - name: precip_mm
+          - name: wind_kph
+          - name: api_timestamp
