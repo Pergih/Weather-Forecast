@@ -7,13 +7,13 @@ import numpy as np
 import random
 from crud import *
 
-load_dotenv(dotenv_path='secrets.env')
+load_dotenv(dotenv_path='.env')
 
-API_KEY = os.getenv("WEATHER_API_KEY")
+# API_KEY = os.getenv("WEATHER_API_KEY")
 LOCATION = "Lisbon"
 # url = f"http://api.weatherapi.com/v1/current.json?key={api_key}&q={location}"
 
-def get_today_weather():
+def get_today_weather(API_KEY):
     url = f"http://api.weatherapi.com/v1/current.json?key={API_KEY}&q={LOCATION}"
     response = requests.get(url)
     data = response.json()
@@ -35,6 +35,10 @@ def get_today_weather():
         print("Error on", response.status_code)
 
 def validate_weather_data(data: dict) -> bool:
+    if data is None:
+        print("Weather data is None")
+        return False
+    
     required_fields = ['api_timestamp', 'location', 'temp_c', 'humidity', 'precip_mm', 'wind_kph']
     for field in required_fields:
         if field not in data or data[field] is None:

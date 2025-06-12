@@ -2,7 +2,7 @@ import psycopg2
 
 def get_connection():
     return psycopg2.connect(
-        host="localhost",       # or "postgres" if using Docker and Airflow
+        host="postgres",       # or "postgres" if using Docker and Airflow
         database="weather_db",
         user="weather_user",
         password="weather_pass",
