@@ -21,10 +21,13 @@ services:
       - 8000:8080
     environment:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://weather_user:weather_pass@postgres:5432/weather_db
+    group_add:
+      - '1001'
     env_file:
       - .env
     volumes:
       - ./airflow/dags:/opt/airflow/dags
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - postgres
     networks:

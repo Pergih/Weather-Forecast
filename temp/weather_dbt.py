@@ -1,8 +1,10 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.providers.docker.operators.docker import DockerOperator
 from datetime import datetime, timedelta
 from crud import create_tables, add_weather, add_sale
 from fetch_weather import get_today_weather, validate_weather_data, generate_mock_sales
+from docker.types import Mount
 from airflow.sdk import Variable
 import os
 
@@ -25,11 +27,26 @@ default_args = {
 }
 
 with DAG(
-    dag_id='weather_sales_etl',
+    dag_id='weather_dbt',
     schedule=timedelta(minutes = 30),
     default_args=default_args,
 ) as dag:
-    extract_load = PythonOperator(
-        task_id='run_weather_sales_etl',
-        python_callable=run_etl,
+    task2 = DockerOperator(
+        task_id='transform_data_task',
+        image='ghcr.io/dbt-labs/dbt-postgres:1.9.latest',
+        command='run',
+        working_dir='/usr/app',
+        mounts=[
+            Mount(
+                source='/home/pergih/Code/python/Weather-Forecast/weather_dbt',
+                target='/usr/app',
+                type='bind'),
+            Mount(
+                source='/home/pergih/Code/python/Weather-Forecast/dbt_profiles/profiles.yml',
+                target='/root/.dbt/profiles.yml',
+                type='bind')
+            ],
+        network_mode='weather-forecast_elt_network',
+        docker_url='unix://var/run/docker.sock',
+        auto_remove='success'
     )
