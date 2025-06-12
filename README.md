@@ -14,7 +14,7 @@ This project was made for educational purposes about API and data pipelines
 
 ## 🗃️ Architecture Overview
 
-![Pipeline Architecture](./images/pipeline_architecture.png){ width=300px }
+![Pipeline Architecture](./images/pipeline_architecture.png)
 
 - Weather data is pulled daily from the [WeatherAPI](https://www.weatherapi.com/).
 - Sales data is mocked based on temperature and precipitation (e.g., more umbrella sales on rainy days).
